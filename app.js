@@ -1,5 +1,5 @@
 var http = require('http');
 http.createServer(function (req, res) {
-  res.write(new Date().toString());
+    res.write(process.env.PORT_REDIS + ' = ' + new Date().toString());
   res.end();
-}).listen(6369);
+}).listen(12345);

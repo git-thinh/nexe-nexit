@@ -6,8 +6,9 @@ namespace nexit
     {
         static void Main(string[] args)
         {
-            Process.Start("TASKKILL", @"/F /IM ""node*""");
-            Process.Start("TASKKILL", @"/F /IM ""nexe*""");
+            Process.Start("TASKKILL", @"/F /IM ""node.exe*""");
+            Process.Start("TASKKILL", @"/F /IM ""nexe.exe*""");
+            Process.Start("TASKKILL", @"/F /IM ""redis-db.exe*""");
         }
     }
 }

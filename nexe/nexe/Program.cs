@@ -1,6 +1,9 @@
 ﻿using System;
 using System.Diagnostics;
+using System.Net;
+using System.Net.Sockets;
 using System.Runtime.InteropServices;
+using System.Threading;
 
 namespace nexe
 {
@@ -13,13 +16,33 @@ namespace nexe
         {
         }
 
+        static string getFreeTcpPort()
+        {
+            TcpListener l = new TcpListener(IPAddress.Loopback, 0);
+            l.Start();
+            int port = ((IPEndPoint)l.LocalEndpoint).Port;
+            l.Stop();
+            return port.ToString();
+        }
+
         static void Main(string[] args)
         {
-            if (args.Length < 2) return;
+            //if (args.Length < 2) return;
             //Console.Title = "nexe node " + args[1];
 
             IntPtr h = Process.GetCurrentProcess().MainWindowHandle;
             ShowWindow(h, 0);
+
+            string port_redis = getFreeTcpPort();
+
+            new Thread(() =>
+            {
+                ProcessStartInfo r = new ProcessStartInfo("redis-db.exe");
+                r.UseShellExecute = false;
+                r.Arguments = "--port " + port_redis + " --bind 127.0.0.1";
+                Process.Start(r);
+                ;
+            }).Start();
 
             var _nodeProcess = new Process
             {
@@ -35,8 +58,12 @@ namespace nexe
                     //Arguments = @" --max-old-space-size=4096 C:\ntest\app.js"
                     //FileName = @"C:\Program Files\nodejs\node.exe",
                     //Arguments = @" --max-old-space-size=4096 ""C:\tfs\LogoPrint\Mascot.LPA-branch-dev-branch-nvt3\Mascot.LPA.ProxySearch\v1\cache.js"""
-                    FileName = args[0],
-                    Arguments = @" --max-old-space-size=4096 " + args[1]
+                    
+                    //FileName = args[0],
+                    //Arguments = @" --max-old-space-size=4096 " + args[1]
+
+                    FileName = @"C:\Program Files\nodejs\node.exe",
+                    Arguments = @"--max-old-space-size=4096 app.js --PORT_REDIS=" + port_redis
                 }
             };
 
