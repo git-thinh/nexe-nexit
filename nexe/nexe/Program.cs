@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
-using System.Text;
-using System.Threading;
 
 namespace nexe
 {
@@ -18,6 +15,9 @@ namespace nexe
 
         static void Main(string[] args)
         {
+            if (args.Length < 2) return;
+            //Console.Title = "nexe node " + args[1];
+
             IntPtr h = Process.GetCurrentProcess().MainWindowHandle;
             ShowWindow(h, 0);
 
@@ -26,36 +26,37 @@ namespace nexe
                 StartInfo =
                 {
                     UseShellExecute = false,
-                    RedirectStandardOutput = true,
+                    RedirectStandardOutput = false,
+                    RedirectStandardInput = false,
                     RedirectStandardError = true,
-                    RedirectStandardInput = true,
-                    //WorkingDirectory = location,
+                    //WorkingDirectory = @"C:\tfs\LogoPrint\Mascot.LPA-branch-dev-branch-nvt3\Mascot.LPA.ProxySearch\",
                     //FileName = @"&quot;%systemdrive%\Program Files\nodejs\node.exe&quot; --max-old-space-size=4096",
                     //FileName = @"C:\Program Files\nodejs\node.exe",
                     //Arguments = @" --max-old-space-size=4096 C:\ntest\app.js"
+                    //FileName = @"C:\Program Files\nodejs\node.exe",
+                    //Arguments = @" --max-old-space-size=4096 ""C:\tfs\LogoPrint\Mascot.LPA-branch-dev-branch-nvt3\Mascot.LPA.ProxySearch\v1\cache.js"""
                     FileName = args[0],
                     Arguments = @" --max-old-space-size=4096 " + args[1]
                 }
             };
 
-            //_nodeProcess.EnableRaisingEvents = true;
-            //_nodeProcess.Exited += nodeExited;
-
             _nodeProcess.Start();
 
             string stderrStr = _nodeProcess.StandardError.ReadToEnd();
-            string stdoutStr = _nodeProcess.StandardOutput.ReadToEnd();
+            ////string stdoutStr = _nodeProcess.StandardOutput.ReadToEnd();
 
             if (!String.IsNullOrEmpty(stderrStr))
             {
-                //LogInfoMessage(stderrStr);
+                ShowWindow(h, 1);
+                Console.Write(stderrStr);
+                Console.ReadLine();
             }
-
-            //LogInfoMessage(stdoutStr);
-            
-            _nodeProcess.WaitForExit();
-            _nodeProcess.Close();
-            nodeExited(_nodeProcess, new EventArgs());
+            else
+            {
+                _nodeProcess.WaitForExit();
+                _nodeProcess.Close();
+                nodeExited(_nodeProcess, new EventArgs());
+            }
         }
     }
 }
