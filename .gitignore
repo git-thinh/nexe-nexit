@@ -1,4 +1,5 @@
 
+node_modules
 nexe/.vs/nexe/v16/.suo
 *.nlp
 nexe/nexe/bin/Debug/mscorlib.dll
